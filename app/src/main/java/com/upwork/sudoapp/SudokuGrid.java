@@ -169,6 +169,14 @@ public class SudokuGrid {
                     try {
                         if (mSelectedCell.getNumber() == mCells[i][j].getNumber() && mSelectedCell.getNumber() != 0) {
                             mCells[i][j].setBackgroundResource(R.color.TARGET_CELL_COLOR);
+                            if (i == row || j == col || k == box) {
+                                mCells[i][j].setTextColor(Color.parseColor("#FF9A2525"));
+                            } else {
+                                if (!mCells[i][j].isLocked()) {
+                                    mCells[i][j].setTextColor(Color.parseColor("#0067ce"));
+                                } else
+                                    mCells[i][j].setTextColor(Color.BLACK);
+                            }
                         } else if (i == row || j == col || k == box) {
                             mCells[i][j].setHighLight();
                         } else {
@@ -180,13 +188,18 @@ public class SudokuGrid {
         }
     }
 
-    public void highlightErrorValueCells() {
+    public void highlightErrorValueCells(int index) {
+        int row = index / 9;
+        int col = index - row * 9;
+        int box = (row / 3) * 3 + col / 3;
 
         Map<Integer, Set<Cell>> map = new HashMap<Integer, Set<Cell>>();
 
-        for (int i = 0; i < mCells.length; i++) {
-            for (int j = 0; j < mCells[i].length; j++) {
-                if (map.containsKey(mCells[i][j].getNumber()) && mCells[i][j].getIndex() % 9 == mSelectedCell.getIndex() % 9)
+        for (int i = 0; i < 9; ++i) {
+            for (int j = 0; j < 9; ++j) {
+                int b = (i / 3) * 3 + j / 3;
+                if (map.containsKey(mCells[i][j].getNumber()) &&
+                    (col == j || row == i || box == b))
                     map.get(mCells[i][j].getNumber()).add(mCells[i][j]);
                 else {
                     Set<Cell> set = new HashSet<Cell>();
@@ -196,50 +209,42 @@ public class SudokuGrid {
             }
         }
 
-        for (Map.Entry<Integer, Set<Cell>> entry : map.entrySet())
-            if (entry.getValue().size() > 1) {
-                for (Cell cell : entry.getValue()) {
-                    if (cell.getIndex() % 9 == mSelectedCell.getIndex() % 9) {
-                        cell.setTextColor(Color.parseColor("#FF9A2525"));
-                        mSelectedCell.setTextColor(Color.parseColor("#FF9A2525"));
-                    } else {
-                        if (!cell.isLocked()) {
-                            cell.setTextColor(Color.parseColor("#0067ce"));
-                        } else
-                            cell.setTextColor(Color.BLACK);
-                    }
+        for (Map.Entry<Integer, Set<Cell>> entry : map.entrySet()) {
+            Log.d("set", String.valueOf(entry.getValue().size()));
+            for (Cell cell : entry.getValue()) {
+                if (entry.getValue().size() > 1) {
+                    cell.setTextColor(Color.parseColor("#FF9A2525"));
+                } else {
+                    if (!cell.isLocked()) {
+                        cell.setTextColor(Color.parseColor("#0067ce"));
+                    } else
+                        cell.setTextColor(Color.BLACK);
                 }
             }
-
-
-        for (int row = 0; row < 9; ++row) {
-
-            for (int col = 0; col < 9; ++col) {
-                try {
-                    int value = mCells[row][col].getNumber();
-                    int box = (row / 3) * 3 + col / 3;
-                    Log.d("sol", String.valueOf(value) + row + col);
-                    if ((mCells[row][col].getIndex() % 9 == mSelectedCell.getIndex() % 9 ||
-                            mCells[row][col].getIndex() / 9 == mSelectedCell.getIndex() / 9) &&
-                                mCells[row][col].getNumber() == mSelectedCell.getNumber()) {
-                        mCells[row][col].setTextColor(Color.parseColor("#FF9A2525"));
-                    } else {
-                        if (!mCells[row][col].isLocked()) {
-                            mCells[row][col].setTextColor(Color.parseColor("#0067ce"));
-                        } else
-                            mCells[row][col].setTextColor(Color.BLACK);
-                    }
-
-                } catch (NullPointerException ignored){}
-            }
         }
+
 //
-//        for (Map.Entry<Integer, Set<Cell>> entry : map.entrySet())
-//            if (entry.getValue().size() > 1)
-//            {
-//                for (Cell cell : entry.getValue())
-//                    cell.setTextColor(Color.parseColor("#FF9A2525"));
+//        for (int row = 0; row < 9; ++row) {
+//
+//            for (int col = 0; col < 9; ++col) {
+//                try {
+//                    int value = mCells[row][col].getNumber();
+//                    int box = (row / 3) * 3 + col / 3;
+//                    Log.d("sol", String.valueOf(value) + row + col);
+//                    if ((mCells[row][col].getIndex() % 9 == row ||
+//                            mCells[row][col].getIndex() / 9 == col) &&
+//                                mCells[row][col].getNumber() == mSelectedCell.getNumber()) {
+//                        mCells[row][col].setTextColor(Color.parseColor("#FF9A2525"));
+//                    } else {
+//                        if (!mCells[row][col].isLocked()) {
+//                            mCells[row][col].setTextColor(Color.parseColor("#0067ce"));
+//                        } else
+//                            mCells[row][col].setTextColor(Color.BLACK);
+//                    }
+//
+//                } catch (NullPointerException ignored){}
 //            }
+//        }
     }
 
 

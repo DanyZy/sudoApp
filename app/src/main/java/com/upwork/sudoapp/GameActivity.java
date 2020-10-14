@@ -222,7 +222,7 @@ public class GameActivity extends AppCompatActivity {
                 if (notesActive == -1) {
                     selectedCell.setNumber(number);
                     highlightSameValueCells(selectedCell.getIndex());
-                    highlightErrorValueCells();
+               //     highlightErrorValueCells(selectedCell.getIndex());
                 } else {
                     selectedCell.addNumber(number);
                 }
@@ -237,10 +237,11 @@ public class GameActivity extends AppCompatActivity {
                     grid.getCell(row, col).setMask(preState.mask);
                 }
                 highlightSameValueCells(selectedCell.getIndex());
-                highlightErrorValueCells();
+               // highlightErrorValueCells(selectedCell.getIndex());
             } else if (number == 11) {
                 selectedCell.setNumber(0);
                 highlightSameValueCells(selectedCell.getIndex());
+                //highlightErrorValueCells(selectedCell.getIndex());
             } else if (number == 10) {
                 notesActive *= -1;
             } else if (number == 13) {
@@ -255,7 +256,7 @@ public class GameActivity extends AppCompatActivity {
                     grid.getCell(row, col).setMask(preState.mask);
                 }
                 highlightSameValueCells(selectedCell.getIndex());
-                highlightErrorValueCells();
+               // highlightErrorValueCells(selectedCell.getIndex());
             }
         }
         Log.d("stack","stack: " + stack.toString());
@@ -268,7 +269,7 @@ public class GameActivity extends AppCompatActivity {
 
     public static void highlightSameValueCells(int index) { grid.highlightSameValueCells(index); }
 
-    public static void highlightErrorValueCells() { grid.highlightErrorValueCells(); }
+    public static void highlightErrorValueCells(int index) { grid.highlightErrorValueCells(index); }
 
     public static void setSelectedCell(int index) { grid.setSelectedCell(index); }
 }
