@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:yourapp="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_reset"
+        android:title="Reset"
+        android:icon="@drawable/ic_reset"
+        yourapp:showAsAction="always" />
+    <item
+        android:id="@+id/action_tutorial"
+        android:title="Tutorial"
+        yourapp:showAsAction="always"
+        android:icon="@drawable/ic_tutorial_1"
+        />
+</menu>
