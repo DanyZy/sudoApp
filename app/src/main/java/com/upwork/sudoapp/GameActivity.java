@@ -222,7 +222,7 @@ public class GameActivity extends AppCompatActivity {
                 if (notesActive == -1) {
                     selectedCell.setNumber(number);
                     highlightSameValueCells(selectedCell.getIndex());
-               //     highlightErrorValueCells(selectedCell.getIndex());
+                    highlightErrorValueCells(selectedCell.getIndex());
                 } else {
                     selectedCell.addNumber(number);
                 }
@@ -237,11 +237,11 @@ public class GameActivity extends AppCompatActivity {
                     grid.getCell(row, col).setMask(preState.mask);
                 }
                 highlightSameValueCells(selectedCell.getIndex());
-               // highlightErrorValueCells(selectedCell.getIndex());
+                highlightErrorValueCells(selectedCell.getIndex());
             } else if (number == 11) {
                 selectedCell.setNumber(0);
                 highlightSameValueCells(selectedCell.getIndex());
-                //highlightErrorValueCells(selectedCell.getIndex());
+                highlightErrorValueCells(selectedCell.getIndex());
             } else if (number == 10) {
                 notesActive *= -1;
             } else if (number == 13) {
@@ -256,7 +256,7 @@ public class GameActivity extends AppCompatActivity {
                     grid.getCell(row, col).setMask(preState.mask);
                 }
                 highlightSameValueCells(selectedCell.getIndex());
-               // highlightErrorValueCells(selectedCell.getIndex());
+                highlightErrorValueCells(selectedCell.getIndex());
             }
         }
         Log.d("stack","stack: " + stack.toString());
