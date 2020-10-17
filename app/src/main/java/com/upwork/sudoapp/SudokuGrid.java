@@ -206,43 +206,24 @@ public class SudokuGrid {
             }
         }
 
+        Map<Integer, Set<Cell>> map2 = new HashMap<Integer, Set<Cell>>();
+
         for (Map.Entry<Integer, Set<Cell>> entry : map.entrySet()) {
             Log.d(String.valueOf(entry.getKey()), String.valueOf(entry.getValue().size()));
             for (Cell cell : entry.getValue()) {
-                if (entry.getKey() == mSelectedCell.getIndex())
-                    if (cell.getNumber() == mSelectedCell.getNumber()) {
-                        cell.setTextColor(Color.parseColor("#FF9A2525"));
-                    } else {
-                        if (!cell.isLocked()) {
-                            cell.setTextColor(Color.parseColor("#0067ce"));
-                        } else
-                            cell.setTextColor(Color.BLACK);
-                    }
+                if (map2.containsKey(cell.getIndex())) {
+                    map2.get(cell.getIndex()).add(cell);
+//                    if (cell.getNumber() == mSelectedCell.getNumber()) {
+//                        cell.setTextColor(Color.parseColor("#FF9A2525"));
+//                    } else {
+//                        if (!cell.isLocked()) {
+//                            cell.setTextColor(Color.parseColor("#0067ce"));
+//                        } else
+//                            cell.setTextColor(Color.BLACK);
+//                    }
+                }
             }
         }
-
-//
-//        for (int row = 0; row < 9; ++row) {
-//
-//            for (int col = 0; col < 9; ++col) {
-//                try {
-//                    int value = mCells[row][col].getNumber();
-//                    int box = (row / 3) * 3 + col / 3;
-//                    Log.d("sol", String.valueOf(value) + row + col);
-//                    if ((mCells[row][col].getIndex() % 9 == row ||
-//                            mCells[row][col].getIndex() / 9 == col) &&
-//                                mCells[row][col].getNumber() == mSelectedCell.getNumber()) {
-//                        mCells[row][col].setTextColor(Color.parseColor("#FF9A2525"));
-//                    } else {
-//                        if (!mCells[row][col].isLocked()) {
-//                            mCells[row][col].setTextColor(Color.parseColor("#0067ce"));
-//                        } else
-//                            mCells[row][col].setTextColor(Color.BLACK);
-//                    }
-//
-//                } catch (NullPointerException ignored){}
-//            }
-//        }
     }
 
 
