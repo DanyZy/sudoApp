@@ -24,6 +24,8 @@ public class SudokuGrid {
     private Cell mSelectedCell;
     private int[][] mSolution = new int[9][9];
 
+    private ArrayList<Cell> cellList = new ArrayList<>();
+
     public SudokuGrid(Context context, int[][] masks, int[][] solution) {
         mContext = context;
         mGridView = ((Activity) context).findViewById(R.id.grid_sudoku);
@@ -185,20 +187,41 @@ public class SudokuGrid {
         int col = index - row * 9;
         int box = (row / 3) * 3 + col / 3;
 
-        Map<Integer, Set<Cell>> map = new HashMap<Integer, Set<Cell>>();
+        Map<Cell, Set<Cell>> mapR = new HashMap<Cell, Set<Cell>>();
+        Map<Cell, Set<Cell>> mapC = new HashMap<Cell, Set<Cell>>();
+        Map<Cell, Set<Cell>> mapB = new HashMap<Cell, Set<Cell>>();
+
 
         for (int i = 0; i < 9; ++i) {
             for (int j = 0; j < 9; ++j) {
                 for (int r = 0; r < 9; ++r) {
                     for (int c = 0; c < 9; ++c) {
                         int b = (r / 3) * 3 + c / 3;
-                        if (r == row || c == col || b == box) {
-                            if (map.containsKey(mCells[i][j].getIndex())) {
-                                map.get(mCells[i][j].getIndex()).add(mCells[r][c]);
+                        if (r == row) {
+                            if (mapR.containsKey(mCells[i][j])) {
+                                mapR.get(mCells[i][j]).add(mCells[r][c]);
                             } else {
                                 Set<Cell> set = new HashSet<Cell>();
                                 set.add(mCells[r][c]);
-                                map.put(mCells[i][j].getIndex(), set);
+                                mapR.put(mCells[i][j], set);
+                            }
+                        }
+                        if (c == col) {
+                            if (mapC.containsKey(mCells[i][j])) {
+                                mapC.get(mCells[i][j]).add(mCells[r][c]);
+                            } else {
+                                Set<Cell> set = new HashSet<Cell>();
+                                set.add(mCells[r][c]);
+                                mapC.put(mCells[i][j], set);
+                            }
+                        }
+                        if (b == box) {
+                            if (mapB.containsKey(mCells[i][j])) {
+                                mapB.get(mCells[i][j]).add(mCells[r][c]);
+                            } else {
+                                Set<Cell> set = new HashSet<Cell>();
+                                set.add(mCells[r][c]);
+                                mapB.put(mCells[i][j], set);
                             }
                         }
                     }
@@ -207,20 +230,98 @@ public class SudokuGrid {
         }
 
         Map<Integer, Set<Cell>> map2 = new HashMap<Integer, Set<Cell>>();
+        Map<Integer, Set<Cell>> map3 = new HashMap<Integer, Set<Cell>>();
+        Map<Integer, Set<Cell>> map4 = new HashMap<Integer, Set<Cell>>();
 
-        for (Map.Entry<Integer, Set<Cell>> entry : map.entrySet()) {
-            Log.d(String.valueOf(entry.getKey()), String.valueOf(entry.getValue().size()));
+        for (Map.Entry<Cell, Set<Cell>> entry : mapR.entrySet()) {
             for (Cell cell : entry.getValue()) {
-                if (map2.containsKey(cell.getIndex())) {
-                    map2.get(cell.getIndex()).add(cell);
-//                    if (cell.getNumber() == mSelectedCell.getNumber()) {
-//                        cell.setTextColor(Color.parseColor("#FF9A2525"));
-//                    } else {
-//                        if (!cell.isLocked()) {
-//                            cell.setTextColor(Color.parseColor("#0067ce"));
-//                        } else
-//                            cell.setTextColor(Color.BLACK);
-//                    }
+                if (map2.containsKey(cell.getNumber()))
+                    map2.get(cell.getNumber()).add(cell);
+                else
+                {
+                    Set<Cell> set = new HashSet<Cell>();
+                    set.add(cell);
+                    map2.put(cell.getNumber(), set);
+                }
+            }
+        }
+
+        for (Map.Entry<Cell, Set<Cell>> entry : mapC.entrySet()) {
+            for (Cell cell : entry.getValue()) {
+                if (map3.containsKey(cell.getNumber()))
+                    map3.get(cell.getNumber()).add(cell);
+                else
+                {
+                    Set<Cell> set = new HashSet<Cell>();
+                    set.add(cell);
+                    map3.put(cell.getNumber(), set);
+                }
+            }
+        }
+
+        for (Map.Entry<Cell, Set<Cell>> entry : mapB.entrySet()) {
+            for (Cell cell : entry.getValue()) {
+                if (map4.containsKey(cell.getNumber()))
+                    map4.get(cell.getNumber()).add(cell);
+                else
+                {
+                    Set<Cell> set = new HashSet<Cell>();
+                    set.add(cell);
+                    map4.put(cell.getNumber(), set);
+                }
+            }
+        }
+
+        for (Map.Entry<Integer, Set<Cell>> entry : map2.entrySet()) {
+            Log.d("size " + entry.getKey(), String.valueOf(entry.getValue().size()));
+            for (Cell cell : entry.getValue()) {
+                if (entry.getValue().size() > 1) {
+                    //Log.d("cell ", String.valueOf(cell.getIndex()));
+                    if (!cellList.contains(cell))
+                        cellList.add(cell);
+//                } else {
+//                    cellList.remove(cell);
+                }
+            }
+        }
+
+        for (Map.Entry<Integer, Set<Cell>> entry : map3.entrySet()) {
+            Log.d("size " + entry.getKey(), String.valueOf(entry.getValue().size()));
+            for (Cell cell : entry.getValue()) {
+                if (entry.getValue().size() > 1) {
+                    //Log.d("cell ", String.valueOf(cell.getIndex()));
+                    if (!cellList.contains(cell))
+                        cellList.add(cell);
+//                } else {
+//                    cellList.remove(cell);
+                }
+            }
+        }
+
+        for (Map.Entry<Integer, Set<Cell>> entry : map4.entrySet()) {
+            Log.d("size " + entry.getKey(), String.valueOf(entry.getValue().size()));
+            for (Cell cell : entry.getValue()) {
+                if (entry.getValue().size() > 1) {
+                    //Log.d("cell ", String.valueOf(cell.getIndex()));
+                    if (!cellList.contains(cell))
+                        cellList.add(cell);
+//                } else {
+//                    cellList.remove(cell);
+                }
+            }
+        }
+
+        for (int i = 0; i < 9; ++i) {
+            for (int j = 0; j < 9; ++j) {
+                if (cellList.contains(mCells[i][j])) {
+                    mCells[i][j].setTextColor(Color.parseColor("#FF9A2525"));
+                    Log.d("cell ", String.valueOf(mCells[i][j].getIndex()));
+                } else {
+                    if (!mCells[i][j].isLocked()) {
+                        mCells[i][j].setTextColor(Color.parseColor("#0067ce"));
+                    } else {
+                        mCells[i][j].setTextColor(Color.BLACK);
+                    }
                 }
             }
         }

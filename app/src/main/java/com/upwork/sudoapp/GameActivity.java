@@ -259,8 +259,8 @@ public class GameActivity extends AppCompatActivity {
                 highlightErrorValueCells(selectedCell.getIndex());
             }
         }
-        Log.d("stack","stack: " + stack.toString());
-        Log.d("redostack","redostack: " + redostack.toString());
+//        Log.d("stack","stack: " + stack.toString());
+//        Log.d("redostack","redostack: " + redostack.toString());
         //highlightErrorValueCells();
         updateNumpad();
     }

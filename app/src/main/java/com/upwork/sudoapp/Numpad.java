@@ -41,7 +41,7 @@ public class Numpad {
         for (int x = 1; x <= 9; ++x) {
             NumpadButton button = (NumpadButton) mGridView2.getChildAt(numpadPosition[x]);
             boolean marked = (mask >> x) % 2 == 1;
-            Log.d("mask", String.valueOf((mask >> x) % 2));
+            //Log.d("mask", String.valueOf((mask >> x) % 2));
             if (button != null)
                 button.setBackgroundColor(marked);
         }
