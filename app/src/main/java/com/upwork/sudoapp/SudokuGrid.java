@@ -182,6 +182,20 @@ public class SudokuGrid {
         }
     }
 
+    public void highlightErrorValues() {
+        Map<Cell, Set<Cell>> mapR = new HashMap<Cell, Set<Cell>>();
+        Map<Cell, Set<Cell>> mapC = new HashMap<Cell, Set<Cell>>();
+        Map<Cell, Set<Cell>> mapB = new HashMap<Cell, Set<Cell>>();
+
+        Cell[] rows
+
+        for (int i = 0; i < 9; ++i) {
+            for (int j = 0; j < 9; ++j) {
+
+            }
+        }
+    }
+
     public void highlightErrorValueCells(int index) {
         int row = index / 9;
         int col = index - row * 9;
