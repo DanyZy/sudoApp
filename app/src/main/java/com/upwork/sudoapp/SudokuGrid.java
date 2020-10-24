@@ -25,6 +25,7 @@ public class SudokuGrid {
     private int[][] mSolution = new int[9][9];
 
     private ArrayList<Cell> cellList = new ArrayList<>();
+    public int tipCounter = 3;
 
     public SudokuGrid(Context context, int[][] masks, int[][] solution) {
         mContext = context;
@@ -182,156 +183,121 @@ public class SudokuGrid {
         }
     }
 
-    public void highlightErrorValues() {
-        Map<Cell, Set<Cell>> mapR = new HashMap<Cell, Set<Cell>>();
-        Map<Cell, Set<Cell>> mapC = new HashMap<Cell, Set<Cell>>();
-        Map<Cell, Set<Cell>> mapB = new HashMap<Cell, Set<Cell>>();
-
-        Cell[] rows
-
+    public void setTipCell(int index) {
         for (int i = 0; i < 9; ++i) {
             for (int j = 0; j < 9; ++j) {
-
+                if (index == mCells[i][j].getIndex() && tipCounter > 0 && mCells[i][j].getMask() != (1 << mSolution[i][j])) {
+                    mSelectedCell.setNumber(mSolution[i][j]);
+                    tipCounter--;
+                }
             }
         }
     }
 
-    public void highlightErrorValueCells(int index) {
-        int row = index / 9;
-        int col = index - row * 9;
-        int box = (row / 3) * 3 + col / 3;
+    public void highlightErrorValues() {
+        Map<Integer, Set<Cell>> mapR = new HashMap<Integer, Set<Cell>>();
+        Map<Integer, Set<Cell>> mapC = new HashMap<Integer, Set<Cell>>();
+        Map<Integer, Set<Cell>> mapB = new HashMap<Integer, Set<Cell>>();
 
-        Map<Cell, Set<Cell>> mapR = new HashMap<Cell, Set<Cell>>();
-        Map<Cell, Set<Cell>> mapC = new HashMap<Cell, Set<Cell>>();
-        Map<Cell, Set<Cell>> mapB = new HashMap<Cell, Set<Cell>>();
-
+        ArrayList<Cell> cellsToRed = new ArrayList<>();
 
         for (int i = 0; i < 9; ++i) {
+            Set<Cell> setR = new HashSet<>();
+            Set<Cell> setC = new HashSet<>();
+            Set<Cell> setB = new HashSet<>();
             for (int j = 0; j < 9; ++j) {
-                for (int r = 0; r < 9; ++r) {
-                    for (int c = 0; c < 9; ++c) {
-                        int b = (r / 3) * 3 + c / 3;
-                        if (r == row) {
-                            if (mapR.containsKey(mCells[i][j])) {
-                                mapR.get(mCells[i][j]).add(mCells[r][c]);
-                            } else {
-                                Set<Cell> set = new HashSet<Cell>();
-                                set.add(mCells[r][c]);
-                                mapR.put(mCells[i][j], set);
-                            }
-                        }
-                        if (c == col) {
-                            if (mapC.containsKey(mCells[i][j])) {
-                                mapC.get(mCells[i][j]).add(mCells[r][c]);
-                            } else {
-                                Set<Cell> set = new HashSet<Cell>();
-                                set.add(mCells[r][c]);
-                                mapC.put(mCells[i][j], set);
-                            }
-                        }
-                        if (b == box) {
-                            if (mapB.containsKey(mCells[i][j])) {
-                                mapB.get(mCells[i][j]).add(mCells[r][c]);
-                            } else {
-                                Set<Cell> set = new HashSet<Cell>();
-                                set.add(mCells[r][c]);
-                                mapB.put(mCells[i][j], set);
-                            }
-                        }
+                setR.add(mCells[i][j]);
+                setC.add(mCells[j][i]);
+            }
+            for (int r = 0; r < 3; ++r) {
+                for (int c = 0; c < 3; ++c) {
+                    setB.add(mCells[r+(i/3)*3][c+(i%3)*3]);
+                }
+            }
+            mapR.put(i, setR);
+            mapC.put(i, setC);
+            mapB.put(i, setB);
+        }
+
+        for (Map.Entry<Integer, Set<Cell>> entry : mapR.entrySet()) {
+            Map<Integer, Set<Cell>> nums = new HashMap<Integer, Set<Cell>>();
+            for (Cell cell : entry.getValue()) {
+                try {
+                    if (nums.containsKey(cell.getNumber())) {
+                        nums.get(cell.getNumber()).add(cell);
+                    } else {
+                        Set<Cell> set = new HashSet<Cell>();
+                        set.add(cell);
+                        nums.put(cell.getNumber(), set);
+                    }
+                } catch (NullPointerException ignored) {}
+            }
+            for (Map.Entry<Integer, Set<Cell>> entry1 : nums.entrySet()) {
+                for (Cell cell : entry1.getValue()) {
+                    if (entry1.getValue().size() > 1) {
+                        cellsToRed.add(cell);
                     }
                 }
             }
         }
 
-        Map<Integer, Set<Cell>> map2 = new HashMap<Integer, Set<Cell>>();
-        Map<Integer, Set<Cell>> map3 = new HashMap<Integer, Set<Cell>>();
-        Map<Integer, Set<Cell>> map4 = new HashMap<Integer, Set<Cell>>();
-
-        for (Map.Entry<Cell, Set<Cell>> entry : mapR.entrySet()) {
+        for (Map.Entry<Integer, Set<Cell>> entry : mapC.entrySet()) {
+            Map<Integer, Set<Cell>> nums = new HashMap<Integer, Set<Cell>>();
             for (Cell cell : entry.getValue()) {
-                if (map2.containsKey(cell.getNumber()))
-                    map2.get(cell.getNumber()).add(cell);
-                else
-                {
-                    Set<Cell> set = new HashSet<Cell>();
-                    set.add(cell);
-                    map2.put(cell.getNumber(), set);
+                try {
+                    if (nums.containsKey(cell.getNumber())) {
+                        nums.get(cell.getNumber()).add(cell);
+                    } else {
+                        Set<Cell> set = new HashSet<Cell>();
+                        set.add(cell);
+                        nums.put(cell.getNumber(), set);
+                    }
+                } catch (NullPointerException ignored) {}
+            }
+            for (Map.Entry<Integer, Set<Cell>> entry1 : nums.entrySet()) {
+                for (Cell cell : entry1.getValue()) {
+                    if (entry1.getValue().size() > 1) {
+                        cellsToRed.add(cell);
+                    }
                 }
             }
         }
 
-        for (Map.Entry<Cell, Set<Cell>> entry : mapC.entrySet()) {
+        for (Map.Entry<Integer, Set<Cell>> entry : mapB.entrySet()) {
+            Map<Integer, Set<Cell>> nums = new HashMap<Integer, Set<Cell>>();
             for (Cell cell : entry.getValue()) {
-                if (map3.containsKey(cell.getNumber()))
-                    map3.get(cell.getNumber()).add(cell);
-                else
-                {
-                    Set<Cell> set = new HashSet<Cell>();
-                    set.add(cell);
-                    map3.put(cell.getNumber(), set);
-                }
+                try {
+                    if (nums.containsKey(cell.getNumber())) {
+                        nums.get(cell.getNumber()).add(cell);
+                    } else {
+                        Set<Cell> set = new HashSet<Cell>();
+                        set.add(cell);
+                        nums.put(cell.getNumber(), set);
+                    }
+                } catch (NullPointerException ignored) {}
             }
-        }
-
-        for (Map.Entry<Cell, Set<Cell>> entry : mapB.entrySet()) {
-            for (Cell cell : entry.getValue()) {
-                if (map4.containsKey(cell.getNumber()))
-                    map4.get(cell.getNumber()).add(cell);
-                else
-                {
-                    Set<Cell> set = new HashSet<Cell>();
-                    set.add(cell);
-                    map4.put(cell.getNumber(), set);
-                }
-            }
-        }
-
-        for (Map.Entry<Integer, Set<Cell>> entry : map2.entrySet()) {
-            Log.d("size " + entry.getKey(), String.valueOf(entry.getValue().size()));
-            for (Cell cell : entry.getValue()) {
-                if (entry.getValue().size() > 1) {
-                    //Log.d("cell ", String.valueOf(cell.getIndex()));
-                    if (!cellList.contains(cell))
-                        cellList.add(cell);
-//                } else {
-//                    cellList.remove(cell);
-                }
-            }
-        }
-
-        for (Map.Entry<Integer, Set<Cell>> entry : map3.entrySet()) {
-            Log.d("size " + entry.getKey(), String.valueOf(entry.getValue().size()));
-            for (Cell cell : entry.getValue()) {
-                if (entry.getValue().size() > 1) {
-                    //Log.d("cell ", String.valueOf(cell.getIndex()));
-                    if (!cellList.contains(cell))
-                        cellList.add(cell);
-//                } else {
-//                    cellList.remove(cell);
-                }
-            }
-        }
-
-        for (Map.Entry<Integer, Set<Cell>> entry : map4.entrySet()) {
-            Log.d("size " + entry.getKey(), String.valueOf(entry.getValue().size()));
-            for (Cell cell : entry.getValue()) {
-                if (entry.getValue().size() > 1) {
-                    //Log.d("cell ", String.valueOf(cell.getIndex()));
-                    if (!cellList.contains(cell))
-                        cellList.add(cell);
-//                } else {
-//                    cellList.remove(cell);
+            for (Map.Entry<Integer, Set<Cell>> entry1 : nums.entrySet()) {
+                for (Cell cell : entry1.getValue()) {
+                    if (entry1.getValue().size() > 1) {
+                        cellsToRed.add(cell);
+                    }
                 }
             }
         }
 
         for (int i = 0; i < 9; ++i) {
             for (int j = 0; j < 9; ++j) {
-                if (cellList.contains(mCells[i][j])) {
+                boolean flag;
+                try {
+                    mCells[i][j].getNumber();
+                    flag = true;
+                } catch (NullPointerException ex) {
+                    flag = false;
+                }
+                if (cellsToRed.contains(mCells[i][j])) {
                     mCells[i][j].setTextColor(Color.parseColor("#FF9A2525"));
-                    Log.d("cell ", String.valueOf(mCells[i][j].getIndex()));
                 } else {
-                    if (!mCells[i][j].isLocked()) {
+                    if (!mCells[i][j].isLocked() && flag) {
                         mCells[i][j].setTextColor(Color.parseColor("#0067ce"));
                     } else {
                         mCells[i][j].setTextColor(Color.BLACK);
@@ -339,8 +305,9 @@ public class SudokuGrid {
                 }
             }
         }
-    }
 
+        cellsToRed.clear();
+    }
 
     /* Grid adapter */
     public class SudokuGridAdapter extends BaseAdapter {

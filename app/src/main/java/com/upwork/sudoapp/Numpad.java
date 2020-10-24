@@ -1,4 +1,5 @@
 package com.upwork.sudoapp;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
@@ -7,7 +8,7 @@ import android.widget.GridView;
 import java.util.ArrayList;
 
 public class Numpad {
-    static final int[] numpadPosition = {-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
+    static final int[] numpadPosition = {-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
 
     private Context mContext;
     private GridView mGridView1;
@@ -21,22 +22,28 @@ public class Numpad {
         init();
     }
 
-    private void init () {
+    private void buttonsInit () {
         ArrayList<NumpadButton> buttons = new ArrayList<>();
-        ArrayList<NumpadButton> nums = new ArrayList<>();
-        for (int pos = 10; pos <= 13; ++pos) {
+        for (int pos = 10; pos <= 14; ++pos) {
             buttons.add(new NumpadButton(mContext, pos));
         }
+        NumpadAdapter numpadAdapter1 = new NumpadAdapter(mContext, buttons);
+        mGridView1.setAdapter(numpadAdapter1);
+    }
+
+    private void init () {
+        ArrayList<NumpadButton> nums = new ArrayList<>();
+
         for (int pos = 1; pos <= 9; ++pos) {
             nums.add(new NumpadButton(mContext, pos));
         }
 
-        NumpadAdapter numpadAdapter1 = new NumpadAdapter(mContext, buttons);
-        mGridView1.setAdapter(numpadAdapter1);
         NumpadAdapter numpadAdapter2 = new NumpadAdapter(mContext, nums);
         mGridView2.setAdapter(numpadAdapter2);
+        buttonsInit();
     }
 
+    @SuppressLint("SetTextI18n")
     public void update (int mask) {
         for (int x = 1; x <= 9; ++x) {
             NumpadButton button = (NumpadButton) mGridView2.getChildAt(numpadPosition[x]);
@@ -45,6 +52,7 @@ public class Numpad {
             if (button != null)
                 button.setBackgroundColor(marked);
         }
+        buttonsInit();
         notesBtn = (NumpadButton) mGridView1.getChildAt(numpadPosition[1]);
         if (notesBtn != null) {
             Log.d("notes null", "nope");

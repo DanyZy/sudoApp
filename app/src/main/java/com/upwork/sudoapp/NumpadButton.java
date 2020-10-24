@@ -11,8 +11,8 @@ import android.widget.TextView;
 public class NumpadButton extends TextView {
     final private int MARKED_COLOR = R.color.NUMPAD_BUTTON_MARKED_COLOR;
     final private int UNMARKED_COLOR = R.color.NUMPAD_BUTTON_UNMARKED_COLOR;
-    final private String[] buttonText = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "NOTES", "CLEAR", "REDO", "UNDO"};
-    final private int[] index = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
+    private String[] buttonText = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "NOTES", "CLEAR", "REDO", "TIP: " + GameActivity.grid.tipCounter, "UNDO"};
+    final private int[] index = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
 
     private int position;
 

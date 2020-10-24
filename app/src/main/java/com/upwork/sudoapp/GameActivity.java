@@ -1,6 +1,8 @@
 package com.upwork.sudoapp;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -27,7 +29,7 @@ public class GameActivity extends AppCompatActivity {
     static public final String[] DIFFICULT_NAME = {"NONE", "Easy", "Normal", "Hard", "Extreme"};
 
     @SuppressLint("StaticFieldLeak")
-    static private SudokuGrid grid;
+    static public SudokuGrid grid;
     @SuppressLint("StaticFieldLeak")
     static private Numpad numpad;
     static private Stack<CellState> stack = new Stack<>();
@@ -41,6 +43,7 @@ public class GameActivity extends AppCompatActivity {
     private int difficulty;
     static private int status; // -3 game done | -2: auto solved | -1: auto fill | 0: playing | 1: player solved
     static public int notesActive = -1;
+    private Timer timer;
 
     private void generateGrid() {
         // generate a grid
@@ -86,7 +89,7 @@ public class GameActivity extends AppCompatActivity {
     private void saveGame() {
         if (status < -1) return;
         int[][] currentMask = grid.getCurrentMasks();
-        GameState state = new GameState(status, difficulty, solution, currentMask);
+        GameState state = new GameState(status, difficulty, timer.getElapsedSeconds(), solution, currentMask);
         try {
             DatabaseHelper DBHelper = DatabaseHelper.newInstance(this);
             SQLiteDatabase database = DBHelper.getWritableDatabase();
@@ -183,6 +186,10 @@ public class GameActivity extends AppCompatActivity {
         }
 
         numpad = new Numpad(this);
+
+        int elapsedTime = bundle.getInt("elapsedSeconds", 0);
+        timer = new Timer(this, elapsedTime);
+        timer.start();
     }
 
     public static void updateNumpad() {
@@ -193,14 +200,23 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void onClickSubmit(View view) {
-        if (!grid.isLegalGrid()) {
-            Toast.makeText(this, "Please complete the table.", LENGTH_LONG).show();
-            return;
-        }
+
         if (solver.checkValidGrid(grid.getNumbers())) {
-            Toast.makeText(this, "Congratulations, you solve the puzzle!", LENGTH_LONG).show();
+            AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.MyTutorialTheme);
+            Spannable message = SpannableWithImage.getTextWithImages(this, "Congratulations, you solve the puzzle!", 50);
+            final Intent intent = new Intent(this, MainMenuActivity.class);
+            dialog.setPositiveButton("CANCEL", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    startActivity(intent);
+                }
+            });
+            dialog.setMessage(message).setTitle("You won with time: " + timer.getElapsedTimeString()).show();
+            //Toast.makeText(this, "Congratulations, you solve the puzzle!", LENGTH_LONG).show();
             // set status to GAME_DONE
             status = -3;
+            timer.stop();
         } else {
             Toast.makeText(this, "Try again, answer is wrong.", LENGTH_LONG).show();
         }
@@ -222,7 +238,7 @@ public class GameActivity extends AppCompatActivity {
                 if (notesActive == -1) {
                     selectedCell.setNumber(number);
                     highlightSameValueCells(selectedCell.getIndex());
-                    highlightErrorValueCells(selectedCell.getIndex());
+                    highlightErrorValueCells();
                 } else {
                     selectedCell.addNumber(number);
                 }
@@ -237,14 +253,19 @@ public class GameActivity extends AppCompatActivity {
                     grid.getCell(row, col).setMask(preState.mask);
                 }
                 highlightSameValueCells(selectedCell.getIndex());
-                highlightErrorValueCells(selectedCell.getIndex());
+                highlightErrorValueCells();
             } else if (number == 11) {
                 selectedCell.setNumber(0);
                 highlightSameValueCells(selectedCell.getIndex());
-                highlightErrorValueCells(selectedCell.getIndex());
+                highlightErrorValueCells();
             } else if (number == 10) {
                 notesActive *= -1;
             } else if (number == 13) {
+                if (!selectedCell.isLocked()) {
+                    setTipCell(selectedCell.getIndex());
+                    highlightErrorValueCells();
+                }
+            } else if (number == 14) {
                 // restore previous selected cell state
                 if (!stack.isEmpty()) {
                     CellState preState = stack.peek();
@@ -256,12 +277,9 @@ public class GameActivity extends AppCompatActivity {
                     grid.getCell(row, col).setMask(preState.mask);
                 }
                 highlightSameValueCells(selectedCell.getIndex());
-                highlightErrorValueCells(selectedCell.getIndex());
+                highlightErrorValueCells();
             }
         }
-//        Log.d("stack","stack: " + stack.toString());
-//        Log.d("redostack","redostack: " + redostack.toString());
-        //highlightErrorValueCells();
         updateNumpad();
     }
 
@@ -269,7 +287,9 @@ public class GameActivity extends AppCompatActivity {
 
     public static void highlightSameValueCells(int index) { grid.highlightSameValueCells(index); }
 
-    public static void highlightErrorValueCells(int index) { grid.highlightErrorValueCells(index); }
+    public static void highlightErrorValueCells() { grid.highlightErrorValues(); }
 
     public static void setSelectedCell(int index) { grid.setSelectedCell(index); }
+
+    public static void setTipCell(int index) {grid.setTipCell(index); }
 }

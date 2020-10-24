@@ -122,9 +122,11 @@ public class Cell extends AppCompatTextView {
                 }
                 setTextSize(CELL_DEFAULT_TEXT_SIZE >> 1);
                 setText(String.valueOf(format));
+                setTextColor(Color.BLACK);
             } else {
                 setTextSize(CELL_DEFAULT_TEXT_SIZE);
                 setText(String.valueOf(maskToNumber.get(mask)));
+                setTextColor(Color.BLACK);
             }
         } else {
             this.mask = 0;
@@ -141,7 +143,7 @@ public class Cell extends AppCompatTextView {
         }
         GameActivity.setSelectedCell(index);
         GameActivity.updateNumpad();
-        //GameActivity.highlightErrorValueCells(index);
+        GameActivity.highlightErrorValueCells();
         return true;
     }
 }
