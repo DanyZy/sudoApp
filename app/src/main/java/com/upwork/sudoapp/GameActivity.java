@@ -240,7 +240,7 @@ public class GameActivity extends AppCompatActivity {
         Cell selectedCell = grid.getSelectedCell();
         if (selectedCell != null) {
             if (number < 10) {
-                if (!selectedCell.isLocked()) {
+                if (!selectedCell.isLocked() && number != selectedCell.getNumber()) {
                     // backup current selected cell state
                     stack.push(selectedCell.getState());
                     if (notesActive == -1) {
