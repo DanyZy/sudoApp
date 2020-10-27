@@ -2,6 +2,7 @@ package com.upwork.sudoapp;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.widget.TextView;
@@ -36,6 +37,10 @@ public class NumpadButton extends TextView {
         }
     }
 
+    public void changeName() {
+        this.setText("TIP: " + GameActivity.grid.tipCounter);
+    }
+
     public int getIndex() {
         return index[position];
     }
@@ -44,8 +49,20 @@ public class NumpadButton extends TextView {
     @Override
     public boolean onTouchEvent (MotionEvent motionEvent) {
         if(motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-            int number = getIndex();
-            GameActivity.onPressNumpad(number);
+            if (getIndex() > 10) {
+                Log.d("action", "down");
+                setBackgroundColor(true);
+            }
+            GameActivity.onPressNumpad(getIndex());
+        } else if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
+            if (getIndex() > 10) {
+                Log.d("action", "up");
+                setBackgroundColor(false);
+            }
+        } else if (motionEvent.getAction() == MotionEvent.ACTION_CANCEL) {
+            if (getIndex() > 10) {
+                setBackgroundColor(false);
+            }
         }
         return true;
     }

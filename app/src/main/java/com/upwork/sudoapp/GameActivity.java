@@ -205,8 +205,13 @@ public class GameActivity extends AppCompatActivity {
             AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.MyTutorialTheme);
             Spannable message = SpannableWithImage.getTextWithImages(this, "Congratulations, you solve the puzzle!", 50);
             final Intent intent = new Intent(this, MainMenuActivity.class);
-            dialog.setPositiveButton("CANCEL", new DialogInterface.OnClickListener() {
-
+            dialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    closeContextMenu();
+                }
+            });
+            dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     startActivity(intent);
@@ -225,6 +230,8 @@ public class GameActivity extends AppCompatActivity {
     private void onClickReset() {
         if (status < -1) return;
         grid.clear();
+        stack.clear();
+        redostack.clear();
         updateNumpad();
     }
 
@@ -232,53 +239,59 @@ public class GameActivity extends AppCompatActivity {
         if(status < -1) return;
         Cell selectedCell = grid.getSelectedCell();
         if (selectedCell != null) {
-            if (number < 10 && !selectedCell.isLocked()) {
-                // backup current selected cell state
-                stack.push(selectedCell.getState());
-                if (notesActive == -1) {
-                    selectedCell.setNumber(number);
-                    highlightSameValueCells(selectedCell.getIndex());
-                    highlightErrorValueCells();
-                } else {
-                    selectedCell.addNumber(number);
+            if (number < 10) {
+                if (!selectedCell.isLocked()) {
+                    // backup current selected cell state
+                    stack.push(selectedCell.getState());
+                    if (notesActive == -1) {
+                        selectedCell.setNumber(number);
+                        highlightSameValueCells(selectedCell.getIndex());
+                        highlightErrorValueCells();
+                    } else {
+                        selectedCell.addNumber(number);
+                    }
                 }
             } else if (number == 12) {
                 if (!redostack.isEmpty()) {
-                    CellState preState = redostack.peek();
-                    stack.push(preState);
-                    redostack.pop();
+                    CellState preState = redostack.pop();
                     int index = preState.index;
                     int row = index / 9;
                     int col = index - row * 9;
+                    stack.push(grid.getCell(row, col).getState());
                     grid.getCell(row, col).setMask(preState.mask);
                 }
                 highlightSameValueCells(selectedCell.getIndex());
                 highlightErrorValueCells();
             } else if (number == 11) {
-                selectedCell.setNumber(0);
-                highlightSameValueCells(selectedCell.getIndex());
-                highlightErrorValueCells();
+                if (!selectedCell.isLocked() && selectedCell.getNumber() != 0) {
+                    stack.push(selectedCell.getState());
+                    selectedCell.setNumber(0);
+                    highlightSameValueCells(selectedCell.getIndex());
+                    highlightErrorValueCells();
+                }
             } else if (number == 10) {
                 notesActive *= -1;
             } else if (number == 13) {
                 if (!selectedCell.isLocked()) {
+                    stack.push(selectedCell.getState());
                     setTipCell(selectedCell.getIndex());
                     highlightErrorValueCells();
                 }
             } else if (number == 14) {
                 // restore previous selected cell state
                 if (!stack.isEmpty()) {
-                    CellState preState = stack.peek();
-                    redostack.push(preState);
-                    stack.pop();
+                    CellState preState = stack.pop();
                     int index = preState.index;
                     int row = index / 9;
                     int col = index - row * 9;
+                    redostack.push(grid.getCell(row, col).getState());
                     grid.getCell(row, col).setMask(preState.mask);
                 }
                 highlightSameValueCells(selectedCell.getIndex());
                 highlightErrorValueCells();
             }
+            Log.d("redostack", " " + redostack.size());
+            Log.d("undostack", " " + stack.size());
         }
         updateNumpad();
     }

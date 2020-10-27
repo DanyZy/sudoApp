@@ -13,7 +13,8 @@ public class Numpad {
     private Context mContext;
     private GridView mGridView1;
     private GridView mGridView2;
-    private NumpadButton notesBtn;
+    //private NumpadButton notesBtn;
+    private NumpadButton tipBtn;
 
     public Numpad (Context context) {
         mContext = context;
@@ -22,28 +23,21 @@ public class Numpad {
         init();
     }
 
-    private void buttonsInit () {
+    private void init () {
+        ArrayList<NumpadButton> nums = new ArrayList<>();
         ArrayList<NumpadButton> buttons = new ArrayList<>();
+        for (int pos = 1; pos <= 9; ++pos) {
+            nums.add(new NumpadButton(mContext, pos));
+        }
         for (int pos = 10; pos <= 14; ++pos) {
             buttons.add(new NumpadButton(mContext, pos));
         }
         NumpadAdapter numpadAdapter1 = new NumpadAdapter(mContext, buttons);
-        mGridView1.setAdapter(numpadAdapter1);
-    }
-
-    private void init () {
-        ArrayList<NumpadButton> nums = new ArrayList<>();
-
-        for (int pos = 1; pos <= 9; ++pos) {
-            nums.add(new NumpadButton(mContext, pos));
-        }
-
         NumpadAdapter numpadAdapter2 = new NumpadAdapter(mContext, nums);
+        mGridView1.setAdapter(numpadAdapter1);
         mGridView2.setAdapter(numpadAdapter2);
-        buttonsInit();
     }
 
-    @SuppressLint("SetTextI18n")
     public void update (int mask) {
         for (int x = 1; x <= 9; ++x) {
             NumpadButton button = (NumpadButton) mGridView2.getChildAt(numpadPosition[x]);
@@ -52,10 +46,14 @@ public class Numpad {
             if (button != null)
                 button.setBackgroundColor(marked);
         }
-        buttonsInit();
-        notesBtn = (NumpadButton) mGridView1.getChildAt(numpadPosition[1]);
+        NumpadButton tipBtn = (NumpadButton) mGridView1.getChildAt(numpadPosition[4]);
+        if (tipBtn != null) {
+            //Log.d("tip null", "nope");
+            tipBtn.changeName();
+        }
+        NumpadButton notesBtn = (NumpadButton) mGridView1.getChildAt(numpadPosition[1]);
         if (notesBtn != null) {
-            Log.d("notes null", "nope");
+            //Log.d("notes null", "nope");
             if (GameActivity.notesActive == 1) {
                 notesBtn.setBackgroundColor(true);
             } else {

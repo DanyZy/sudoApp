@@ -113,7 +113,7 @@ public class Cell extends AppCompatTextView {
         this.mask = mask;
         if (mask != 0 && mask % 2 == 0) {
             int counter = Integer.bitCount(mask);
-            if (counter > 1) {
+            if (counter > 1 || (counter == 1 && GameActivity.notesActive == 1)) {
                 char[] format = "1  2  3\n4  5  6\n7  8  9".toCharArray();
                 for (int x = 1; x <= 9; ++x) {
                     if ((mask >> x) % 2 == 0) {
