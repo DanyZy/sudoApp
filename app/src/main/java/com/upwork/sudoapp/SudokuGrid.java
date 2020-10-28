@@ -160,6 +160,36 @@ public class SudokuGrid {
         }
     }
 
+    public List<Integer> numberAnswersCheck() {
+        Map<Integer, Set<Cell>> map = new HashMap<Integer, Set<Cell>>();
+        List<Integer> list = new ArrayList<>();
+        for (int i = 0; i < 9; ++i) {
+            for (int j = 0; j < 9; ++j) {
+//                Log.d("solution", "" + mSolution[i][j]);
+//                Log.d("cell", "" + (mCells[i][j].getNumber() + 1024));
+                try {
+                    if ((1024 + mCells[i][j].getNumber()) == mSolution[i][j] || mCells[i][j].getNumber() == mSolution[i][j]) {
+                        if (map.containsKey(mCells[i][j].getNumber())) {
+                            map.get(mCells[i][j].getNumber()).add(mCells[i][j]);
+                        } else {
+                            Set<Cell> set = new HashSet<>();
+                            set.add(mCells[i][j]);
+                            map.put(mCells[i][j].getNumber(), set);
+                        }
+                    }
+                } catch (NullPointerException ignore){}
+            }
+        }
+
+        for (Map.Entry<Integer, Set<Cell>> entry : map.entrySet()) {
+            //Log.d("" + entry.getKey(), "" + entry.getValue().size());
+            if (entry.getValue().size() == 9) {
+                list.add(entry.getKey());
+            }
+        }
+        return list;
+    }
+
     public void highlightSameValueCells(int index) {
         int row = index / 9;
         int col = index - row * 9;

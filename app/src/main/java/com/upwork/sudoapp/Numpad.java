@@ -13,8 +13,6 @@ public class Numpad {
     private Context mContext;
     private GridView mGridView1;
     private GridView mGridView2;
-    //private NumpadButton notesBtn;
-    private NumpadButton tipBtn;
 
     public Numpad (Context context) {
         mContext = context;

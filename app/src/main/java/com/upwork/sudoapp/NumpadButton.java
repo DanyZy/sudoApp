@@ -53,14 +53,20 @@ public class NumpadButton extends TextView {
                 Log.d("action", "down");
                 setBackgroundColor(true);
             }
-            GameActivity.onPressNumpad(getIndex());
+            if (!GameActivity.numberAnswersCheck().contains(getIndex())) {
+                GameActivity.onPressNumpad(getIndex());
+                setTextColor(Color.parseColor("#0067ce"));
+            }
+            if (GameActivity.numberAnswersCheck().contains(getIndex())) {
+                setTextColor(Color.BLACK);
+            }
         } else if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
-            if (getIndex() > 10) {
+            if (getIndex() > 10 && !GameActivity.numberAnswersCheck().contains(getIndex())) {
                 Log.d("action", "up");
                 setBackgroundColor(false);
             }
         } else if (motionEvent.getAction() == MotionEvent.ACTION_CANCEL) {
-            if (getIndex() > 10) {
+            if (getIndex() > 10 && !GameActivity.numberAnswersCheck().contains(getIndex())) {
                 setBackgroundColor(false);
             }
         }

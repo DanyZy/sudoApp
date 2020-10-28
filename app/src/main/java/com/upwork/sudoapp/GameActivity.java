@@ -19,6 +19,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -105,23 +106,23 @@ public class GameActivity extends AppCompatActivity {
         super.onPause();
     }
 
-    boolean wannaBack = false;
-    @Override
-    public void onBackPressed() {
-        if (wannaBack) {
-            super.onBackPressed();
-            return;
-        }
-
-        wannaBack = true;
-        Toast.makeText(this, "Press 'BACK' again to return to the main menu.", Toast.LENGTH_SHORT).show();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                wannaBack = false;
-            }
-        }, 3000);
-    }
+//    boolean wannaBack = false;
+//    @Override
+//    public void onBackPressed() {
+//        if (wannaBack) {
+//            super.onBackPressed();
+//            return;
+//        }
+//
+//        wannaBack = true;
+//        Toast.makeText(this, "Press 'BACK' again to return to the main menu.", Toast.LENGTH_SHORT).show();
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                wannaBack = false;
+//            }
+//        }, 3000);
+//    }
 
     @SuppressLint("ResourceType")
     @Override
@@ -223,7 +224,7 @@ public class GameActivity extends AppCompatActivity {
             status = -3;
             timer.stop();
         } else {
-            Toast.makeText(this, "Try again, answer is wrong.", LENGTH_LONG).show();
+            Toast.makeText(this, "The puzzle is incomplete. Please complete to submit it.", LENGTH_LONG).show();
         }
     }
 
@@ -240,14 +241,16 @@ public class GameActivity extends AppCompatActivity {
         Cell selectedCell = grid.getSelectedCell();
         if (selectedCell != null) {
             if (number < 10) {
-                if (!selectedCell.isLocked() && number != selectedCell.getNumber()) {
-                    // backup current selected cell state
-                    stack.push(selectedCell.getState());
+                if (!selectedCell.isLocked()) {
                     if (notesActive == -1) {
+                        if (number != selectedCell.getNumber()) {
+                            stack.push(selectedCell.getState());
+                        }
                         selectedCell.setNumber(number);
                         highlightSameValueCells(selectedCell.getIndex());
                         highlightErrorValueCells();
                     } else {
+                        stack.push(selectedCell.getState());
                         selectedCell.addNumber(number);
                     }
                 }
@@ -301,6 +304,8 @@ public class GameActivity extends AppCompatActivity {
     public static void highlightSameValueCells(int index) { grid.highlightSameValueCells(index); }
 
     public static void highlightErrorValueCells() { grid.highlightErrorValues(); }
+
+    public static List<Integer> numberAnswersCheck() { return grid.numberAnswersCheck(); }
 
     public static void setSelectedCell(int index) { grid.setSelectedCell(index); }
 
