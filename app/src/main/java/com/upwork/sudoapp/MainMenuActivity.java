@@ -78,7 +78,7 @@ public class MainMenuActivity extends Activity {
         Cursor cursor = database.rawQuery("SELECT * FROM GameState ORDER BY lastPlaying DESC LIMIT 1", null);
         float dp = AppConstant.convertDpToPixel(1, this);
         //int btnMargin = (int) (5 * dp);
-        if(cursor != null && cursor.getCount() > 0) {
+        if(cursor != null && cursor.getCount() > 0 && GameActivity.status != -3) {
             btnResume.setVisibility(View.VISIBLE);
             RelativeLayout.LayoutParams btnResumeParams = new RelativeLayout.LayoutParams(width, ViewGroup.LayoutParams.WRAP_CONTENT);
             btnResumeParams.addRule(RelativeLayout.BELOW, R.id.btn_extreme);

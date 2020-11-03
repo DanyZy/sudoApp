@@ -55,9 +55,10 @@ public class NumpadButton extends TextView {
             }
             if (!GameActivity.numberAnswersCheck().contains(getIndex())) {
                 GameActivity.onPressNumpad(getIndex());
-                setTextColor(Color.parseColor("#0067ce"));
+                if (getIndex() < 10)
+                    setTextColor(Color.parseColor("#0067ce"));
             }
-            if (GameActivity.numberAnswersCheck().contains(getIndex())) {
+            if (GameActivity.numberAnswersCheck().contains(getIndex()) && getIndex() < 10) {
                 setTextColor(Color.BLACK);
             }
         } else if(motionEvent.getAction() == MotionEvent.ACTION_UP) {

@@ -42,7 +42,7 @@ public class GameActivity extends AppCompatActivity {
     /* game state */
     private int[][] solution;
     private int difficulty;
-    static private int status; // -3 game done | -2: auto solved | -1: auto fill | 0: playing | 1: player solved
+    static public int status; // -3 game done | -2: auto solved | -1: auto fill | 0: playing | 1: player solved
     static public int notesActive = -1;
     private Timer timer;
 
@@ -243,7 +243,11 @@ public class GameActivity extends AppCompatActivity {
             if (number < 10) {
                 if (!selectedCell.isLocked()) {
                     if (notesActive == -1) {
-                        if (number != selectedCell.getNumber()) {
+                        try {
+                            if (number != selectedCell.getNumber()) {
+                                stack.push(selectedCell.getState());
+                            }
+                        } catch (NullPointerException ex) {
                             stack.push(selectedCell.getState());
                         }
                         selectedCell.setNumber(number);
@@ -266,7 +270,14 @@ public class GameActivity extends AppCompatActivity {
                 highlightSameValueCells(selectedCell.getIndex());
                 highlightErrorValueCells();
             } else if (number == 11) {
-                if (!selectedCell.isLocked() && selectedCell.getNumber() != 0) {
+                try {
+                    if (!selectedCell.isLocked() && selectedCell.getNumber() != 0) {
+                        stack.push(selectedCell.getState());
+                        selectedCell.setNumber(0);
+                        highlightSameValueCells(selectedCell.getIndex());
+                        highlightErrorValueCells();
+                    }
+                } catch (NullPointerException ex) {
                     stack.push(selectedCell.getState());
                     selectedCell.setNumber(0);
                     highlightSameValueCells(selectedCell.getIndex());
@@ -278,6 +289,7 @@ public class GameActivity extends AppCompatActivity {
                 if (!selectedCell.isLocked()) {
                     stack.push(selectedCell.getState());
                     setTipCell(selectedCell.getIndex());
+                    highlightSameValueCells(selectedCell.getIndex());
                     highlightErrorValueCells();
                 }
             } else if (number == 14) {

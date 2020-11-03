@@ -2,17 +2,22 @@ package com.upwork.sudoapp;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.os.Handler;
 import android.widget.TextView;
 
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.ProcessLifecycleOwner;
 
-public class Timer {
+
+public class Timer implements LifecycleObserver {
     private Handler handler;
     private Runnable runnable;
     private int elapsedTime;
     private Context context;
     private TextView timeText;
+    private boolean flag;
 
     public Timer(Context context, int elapsedTime) {
         this.context = context;
@@ -31,11 +36,27 @@ public class Timer {
         runnable = new Runnable() {
             @Override
             public void run() {
-                elapsedTime += 1;
+                if (flag)
+                    elapsedTime += 1;
                 handler.postDelayed(runnable, 1000);
                 timeText.setText(getElapsedTimeString());
             }
         };
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
+    }
+
+    private boolean isInForeground() {
+        return ProcessLifecycleOwner.get().getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED);
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    private void onAppForegrounded() {
+        flag = true;
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    private void onAppBackgrounded() {
+        flag = false;
     }
 
     public int getElapsedSeconds() {
